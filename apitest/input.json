@@ -1,0 +1,122 @@
+[
+  {
+    "id": "tt0111161",
+    "title": "The Shawshank Redemption",
+    "year": 1994,
+    "rating": 9.3,
+    "runtime": 142,
+    "genres": ["Drama"],
+    "director": "Frank Darabont",
+    "stars": ["Tim Robbins", "Morgan Freeman", "Bob Gunton"],
+    "vote_count": 2578923,
+    "release_date": "1994-09-23T00:00:00Z"
+  },
+  {
+    "id": "tt0068646",
+    "title": "The Godfather",
+    "year": 1972,
+    "rating": 9.2,
+    "runtime": 175,
+    "genres": ["Crime", "Drama"],
+    "director": "Francis Ford Coppola",
+    "stars": ["Marlon Brando", "Al Pacino", "James Caan"],
+    "vote_count": 1789432,
+    "release_date": "1972-03-24T00:00:00Z"
+  },
+  {
+    "id": "tt0468569",
+    "title": "The Dark Knight",
+    "year": 2008,
+    "rating": 9.0,
+    "runtime": 152,
+    "genres": ["Action", "Crime", "Drama"],
+    "director": "Christopher Nolan",
+    "stars": ["Christian Bale", "Heath Ledger", "Aaron Eckhart"],
+    "vote_count": 2573498,
+    "release_date": "2008-07-18T00:00:00Z"
+  },
+  {
+    "id": "tt0167260",
+    "title": "The Lord of the Rings: The Return of the King",
+    "year": 2003,
+    "rating": 9.0,
+    "runtime": 201,
+    "genres": ["Action", "Adventure", "Drama"],
+    "director": "Peter Jackson",
+    "stars": ["Elijah Wood", "Viggo Mortensen", "Ian McKellen"],
+    "vote_count": 1758934,
+    "release_date": "2003-12-17T00:00:00Z"
+  },
+  {
+    "id": "tt0109830",
+    "title": "Forrest Gump",
+    "year": 1994,
+    "rating": 8.8,
+    "runtime": 142,
+    "genres": ["Drama", "Romance"],
+    "director": "Robert Zemeckis",
+    "stars": ["Tom Hanks", "Robin Wright", "Gary Sinise"],
+    "vote_count": 1903324,
+    "release_date": "1994-07-06T00:00:00Z"
+  },
+  {
+    "id": "tt0133093",
+    "title": "The Matrix",
+    "year": 1999,
+    "rating": 8.7,
+    "runtime": 136,
+    "genres": ["Action", "Sci-Fi"],
+    "director": "Lana Wachowski",
+    "stars": ["Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss"],
+    "vote_count": 1789543,
+    "release_date": "1999-03-31T00:00:00Z"
+  },
+  {
+    "id": "tt0110912",
+    "title": "Pulp Fiction",
+    "year": 1994,
+    "rating": 8.9,
+    "runtime": 154,
+    "genres": ["Crime", "Drama"],
+    "director": "Quentin Tarantino",
+    "stars": ["John Travolta", "Uma Thurman", "Samuel L. Jackson"],
+    "vote_count": 1978345,
+    "release_date": "1994-10-14T00:00:00Z"
+  },
+  {
+    "id": "tt0816692",
+    "title": "Interstellar",
+    "year": 2014,
+    "rating": 8.6,
+    "runtime": 169,
+    "genres": ["Adventure", "Drama", "Sci-Fi"],
+    "director": "Christopher Nolan",
+    "stars": ["Matthew McConaughey", "Anne Hathaway", "Jessica Chastain"],
+    "vote_count": 1689234,
+    "release_date": "2014-11-07T00:00:00Z"
+  },
+  {
+    "id": "tt1375666",
+    "title": "Inception",
+    "year": 2010,
+    "rating": 8.8,
+    "runtime": 148,
+    "genres": ["Action", "Adventure", "Sci-Fi"],
+    "director": "Christopher Nolan",
+    "stars": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Ellen Page"],
+    "vote_count": 2198345,
+    "release_date": "2010-07-16T00:00:00Z"
+  },
+  {
+    "id": "tt0120737",
+    "title": "The Lord of the Rings: The Fellowship of the Ring",
+    "year": 2001,
+    "rating": 8.8,
+    "runtime": 178,
+    "genres": ["Action", "Adventure", "Drama"],
+    "director": "Peter Jackson",
+    "stars": ["Elijah Wood", "Ian McKellen", "Orlando Bloom"],
+    "vote_count": 1678543,
+    "release_date": "2001-12-19T00:00:00Z"
+  }
+]
