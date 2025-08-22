@@ -3,10 +3,37 @@
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>muninn</title>
+    <title>Muninn - Quick Capture</title>
 </head>
 <body>
-<div id="app"></div>
-<script src="./src/main.js" type="module"></script>
+    <div class="capture-overlay">
+        <div class="capture-popup" id="capturePopup">
+            <div class="drag-hint">Drop files to attach</div>
+            <div class="pasted-indicator" id="pastedIndicator">Pasted!</div>
+            
+            <textarea 
+                class="text-input" 
+                id="textInput"
+                placeholder="What's on your mind?"
+                autofocus
+            ></textarea>
+            
+            <div class="attachments-section" id="attachmentsSection"></div>
+            
+            <div class="actions">
+                <button class="attach-btn" onclick="triggerFileSelect()">
+                    📎 Attach Files
+                </button>
+                <div class="save-shortcuts">
+                    Ctrl+Enter to save • Esc to close
+                </div>
+            </div>
+            
+            <input type="file" class="hidden-file-input" id="fileInput" multiple accept="*/*">
+        </div>
+    </div>
+
+    <div id="app"></div>
+    <script src="./src/main.js" type="module"></script>
 </body>
 </html>
