@@ -10,6 +10,10 @@ export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
-export function SaveNote(arg1, arg2) {
-  return window['go']['main']['App']['SaveNote'](arg1, arg2);
+export function SaveNote(arg1) {
+  return window['go']['main']['App']['SaveNote'](arg1);
+}
+
+export function SaveTextNote(arg1) {
+  return window['go']['main']['App']['SaveTextNote'](arg1);
 }

@@ -50,9 +50,9 @@ func InitDirectory() error {
 	// Use platform-appropriate directory name
 	dirName := "Muninn"
 	if runtime.GOOS == "windows" {
-		dirName = "Muninn" // Windows users expect visible directories
+		dirName = "Muninn"
 	} else {
-		dirName = ".muninn" // Unix-like systems use hidden directories
+		dirName = ".muninn"
 	}
 
 	dirPath := path.Join(homeDir, dirName)
@@ -95,20 +95,35 @@ func (a *App) CreateFile() (*os.File, error) {
 	return file, nil
 }
 
-func (a *App) SaveNote(note string, attachmentMap []map[string]any) error {
+func (a *App) SaveNote(thought Thought) error {
 	file, err := a.CreateFile()
 	if err != nil {
 		return fmt.Errorf("The following error was encountered when creating a file to append thoughts to: %w", err)
 	}
 	defer file.Close()
 
-	note = THOUGHT_DELIMITER + note + "\n"
+	// Format the thought with delimiter and timestamp
+	timestamp := thought.Timestamp.Format("15:04:05")
+	noteText := fmt.Sprintf("%s [%s] %s\n", THOUGHT_DELIMITER, timestamp, thought.Text)
 
-	if _, err := file.WriteString(note); err != nil {
+	if _, err := file.WriteString(noteText); err != nil {
 		return fmt.Errorf("error writing thought: %w", err)
 	}
 
-	//#TODO: Handle attachmentMap logic
+	// Handle attachments if any
+	if len(thought.Attachments) > 0 {
+		for _, attachment := range thought.Attachments {
+			// TODO: Implement attachment saving logic
+			// For now, just log that we have attachments
+			fmt.Printf("Attachment found: %s (%s)\n", attachment.FileName, attachment.FileType)
+		}
+	}
 
 	return nil
+}
+
+// SaveTextNote is a convenience function to save a simple text note
+func (a *App) SaveTextNote(text string) error {
+	thought := NewThought(text)
+	return a.SaveNote(thought)
 }

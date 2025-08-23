@@ -128,7 +128,14 @@ async function saveNote() {
             data: null // Will be populated by backend when file is processed
         }));
 
-        SaveNote(text, attachmentInfo)
+        // Create a Thought object that matches the backend struct
+        const thought = {
+            text: text,
+            attachments: attachmentInfo,
+            timestamp: new Date()
+        };
+
+        SaveNote(thought)
         
         // Clear the form
         textInput.value = '';
