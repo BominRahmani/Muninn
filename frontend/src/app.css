@@ -115,6 +115,14 @@ body {
     flex-direction: column;
     box-shadow: none;
     transition: all 0.2s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+}
+
+.capture-popup::-webkit-scrollbar {
+    display: none; 
 }
 
 .capture-popup.drag-over {
@@ -231,6 +239,23 @@ body {
 .save-shortcuts {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.3);
+}
+
+/* Screen vibration animation */
+.screen-vibrate {
+    animation: screenVibrate 0.3s ease-in-out;
+}
+
+@keyframes screenVibrate {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-1px);
+    }
+    75% {
+        transform: translateX(1px);
+    }
 }
 
 .drag-hint {

@@ -1,6 +1,7 @@
 import './style.css';
 import './app.css';
 import {SaveNote} from '../wailsjs/go/main/App';
+import {Hide} from '../wailsjs/runtime/runtime';
 
 // Capture functionality
 const popup = document.getElementById('capturePopup');
@@ -120,6 +121,13 @@ async function saveNote() {
         return; // Don't save empty notes
     }
 
+    const capturePopup = document.getElementById('capturePopup');
+    capturePopup.classList.add('screen-vibrate');
+    
+    setTimeout(() => {
+        capturePopup.classList.remove('screen-vibrate');
+    }, 300);
+
     try {
         const attachmentInfo = attachments.map(a => ({
             fileName: a.name,
@@ -130,9 +138,9 @@ async function saveNote() {
 
         // Create a Thought object that matches the backend struct
         const thought = {
-            text: text,
-            attachments: attachmentInfo,
-            timestamp: new Date()
+            Text: text,
+            Attachments: attachmentInfo,
+            Timestamp: new Date()
         };
 
         SaveNote(thought)
@@ -153,7 +161,7 @@ async function saveNote() {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         console.log('Closing capture popup...');
-        // You can add logic here to close the app or hide the capture interface
+        Hide(); // Hide the window when Escape is pressed
     }
     if (e.ctrlKey && e.key === 'Enter') {
         e.preventDefault();

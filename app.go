@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	hook "github.com/robotn/gohook"
+	rt "github.com/wailsapp/wails/v2/pkg/runtime"
 	"io/fs"
 	"os"
 	"path"
@@ -32,6 +34,24 @@ func (a *App) startup(ctx context.Context) {
 	if err := InitDirectory(); err != nil {
 		fmt.Printf("Failed to initialize directory: %v\n", err)
 	}
+	go a.listenHotkeys()
+}
+
+func (a *App) listenHotkeys() {
+	fmt.Println("Listening for hotkeys...")
+
+	hook.Register(hook.KeyDown, []string{"cmd", "ctrl", "e"}, func(e hook.Event) {
+		rt.WindowShow(a.ctx)
+		rt.WindowSetAlwaysOnTop(a.ctx, true)
+		rt.WindowSetAlwaysOnTop(a.ctx, false)
+	})
+
+	hook.Register(hook.KeyDown, []string{"esc"}, func(e hook.Event) {
+		rt.WindowHide(a.ctx)
+	})
+
+	s := hook.Start()
+	<-hook.Process(s)
 }
 
 // Greet returns a greeting for the given name
@@ -103,27 +123,12 @@ func (a *App) SaveNote(thought Thought) error {
 	defer file.Close()
 
 	// Format the thought with delimiter and timestamp
-	timestamp := thought.Timestamp.Format("15:04:05")
-	noteText := fmt.Sprintf("%s [%s] %s\n", THOUGHT_DELIMITER, timestamp, thought.Text)
+	timestampFormatted := thought.Timestamp.Format("15:04:05")
+	noteText := fmt.Sprintf("%s [%s] %s\n", THOUGHT_DELIMITER, timestampFormatted, thought.Text)
 
 	if _, err := file.WriteString(noteText); err != nil {
 		return fmt.Errorf("error writing thought: %w", err)
 	}
 
-	// Handle attachments if any
-	if len(thought.Attachments) > 0 {
-		for _, attachment := range thought.Attachments {
-			// TODO: Implement attachment saving logic
-			// For now, just log that we have attachments
-			fmt.Printf("Attachment found: %s (%s)\n", attachment.FileName, attachment.FileType)
-		}
-	}
-
 	return nil
-}
-
-// SaveTextNote is a convenience function to save a simple text note
-func (a *App) SaveTextNote(text string) error {
-	thought := NewThought(text)
-	return a.SaveNote(thought)
 }

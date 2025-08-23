@@ -8,5 +8,3 @@ export function CreateFile():Promise<os.File>;
 export function Greet(arg1:string):Promise<string>;
 
 export function SaveNote(arg1:main.Thought):Promise<void>;
-
-export function SaveTextNote(arg1:string):Promise<void>;
