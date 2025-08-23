@@ -19,7 +19,8 @@ auto-categorization, semantic search, and intelligent linking.
 ## Features (Planned)
 
 - **Quick Capture**
-  - Hotkey-triggered popup for instant notes
+  - Hotkey-triggered popup for instant notes [x]
+    - cmd + ctrl + e to pop up and esc to minimize
   - Clipboard text/image capture
   - Screenshot attachments
 
