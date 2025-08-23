@@ -11,3 +11,6 @@ type Thought struct {
 	Text        string       `json:"text"`
 	Attachments []Attachment `json:"attachments"`
 }
+
+
+

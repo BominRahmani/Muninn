@@ -1,6 +1,6 @@
 import './style.css';
 import './app.css';
-
+import {SaveNote} from '../wailsjs/go/main/App';
 
 // Capture functionality
 const popup = document.getElementById('capturePopup');
@@ -128,7 +128,7 @@ async function saveNote() {
             data: null // Will be populated by backend when file is processed
         }));
 
-        await SaveNote(text, attachmentInfo);
+        SaveNote(text, attachmentInfo)
         
         // Clear the form
         textInput.value = '';
