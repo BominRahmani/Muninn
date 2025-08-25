@@ -118,46 +118,60 @@ function showPastedIndicator() {
 async function saveNote() {
     const text = textInput.value.trim();
     if (!text && attachments.length === 0) {
-        return; // Don't save empty notes
+        return;
     }
 
     const capturePopup = document.getElementById('capturePopup');
     capturePopup.classList.add('screen-vibrate');
-    
-    setTimeout(() => {
-        capturePopup.classList.remove('screen-vibrate');
-    }, 300);
+    setTimeout(() => capturePopup.classList.remove('screen-vibrate'), 300);
 
     try {
-        const attachmentInfo = attachments.map(a => ({
-            fileName: a.name,
-            fileType: a.type,
-            filePath: '', // Will be set by backend when file is saved
-            data: null // Will be populated by backend when file is processed
-        }));
+        const attachmentInfo = await Promise.all(
+            attachments.map(async (a, i) => {
+                let filePath = '';
+                let data = null;
+                
+                // Convert file to bytes for backend
+                const file = a.file;
+                if (file.path) {
+                    filePath = file.path; // For files with system paths
+                } else if (file instanceof File || file instanceof Blob) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    data = Array.from(new Uint8Array(arrayBuffer)); // Convert to byte array
+                }
 
-        // Create a Thought object that matches the backend struct
+                return {
+                    id: "", 
+                    fileName: a.name || `attachment_${i}`,
+                    fileType: a.type || "application/octet-stream",
+                    filePath, 
+                    data // Send bytes to backend
+                };
+            })
+        );
+
         const thought = {
+            ID: crypto.randomUUID(), 
             Text: text,
             Attachments: attachmentInfo,
-            Timestamp: new Date()
+            Timestamp: new Date().toISOString() 
         };
 
-        SaveNote(thought)
+        await SaveNote(thought);
         
-        // Clear the form
+        // Reset UI
         textInput.value = '';
         textInput.style.height = '120px';
         attachments = [];
         renderAttachments();
-        
+
         console.log('Note saved successfully');
     } catch (err) {
         console.error('Error saving note:', err);
     }
 }
 
-// Keyboard shortcuts
+  // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         console.log('Closing capture popup...');

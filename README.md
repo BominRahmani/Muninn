@@ -20,9 +20,9 @@ auto-categorization, semantic search, and intelligent linking.
 
 - **Quick Capture**
   - Hotkey-triggered popup for instant notes [x]
-    - cmd + ctrl + e to pop up and esc to minimize
-  - Clipboard text/image capture
-  - Screenshot attachments
+    - ctrl + o to pop up and esc to minimize
+  - Clipboard text/image capture [x]
+  - Screenshot attachments [x]
 
 - **Storage**
   - Notes stored as structured JSON (or SQLite)

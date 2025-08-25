@@ -1,6 +1,7 @@
 export namespace main {
 	
 	export class Attachment {
+	    id: string;
 	    fileName: string;
 	    fileType: string;
 	    filePath: string;
@@ -12,6 +13,7 @@ export namespace main {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
 	        this.fileName = source["fileName"];
 	        this.fileType = source["fileType"];
 	        this.filePath = source["filePath"];
@@ -19,6 +21,7 @@ export namespace main {
 	    }
 	}
 	export class Thought {
+	    id: string;
 	    text: string;
 	    attachments: Attachment[];
 	    // Go type: time
@@ -30,6 +33,7 @@ export namespace main {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
 	        this.text = source["text"];
 	        this.attachments = this.convertValues(source["attachments"], Attachment);
 	        this.timestamp = this.convertValues(source["timestamp"], null);
@@ -52,23 +56,6 @@ export namespace main {
 		    }
 		    return a;
 		}
-	}
-
-}
-
-export namespace os {
-	
-	export class File {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new File(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
 	}
 
 }

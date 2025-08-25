@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
-	"errors"
+	"encoding/json"
 	"fmt"
-	hook "github.com/robotn/gohook"
-	rt "github.com/wailsapp/wails/v2/pkg/runtime"
-	"io/fs"
+	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
 	"time"
+
+	hook "github.com/robotn/gohook"
+	rt "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 const (
@@ -31,16 +33,13 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	if err := InitDirectory(); err != nil {
-		fmt.Printf("Failed to initialize directory: %v\n", err)
-	}
 	go a.listenHotkeys()
 }
 
 func (a *App) listenHotkeys() {
 	fmt.Println("Listening for hotkeys...")
 
-	hook.Register(hook.KeyDown, []string{"cmd", "ctrl", "e"}, func(e hook.Event) {
+	hook.Register(hook.KeyDown, []string{"ctrl", "o"}, func(e hook.Event) {
 		rt.WindowShow(a.ctx)
 		rt.WindowSetAlwaysOnTop(a.ctx, true)
 		rt.WindowSetAlwaysOnTop(a.ctx, false)
@@ -54,81 +53,102 @@ func (a *App) listenHotkeys() {
 	<-hook.Process(s)
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
-// InitDirectory ensures the temporary directory used for buffering the files before they are sent to the backend is initialized
-func InitDirectory() error {
-	// Use user's home directory instead of config directory for better permissions
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return fmt.Errorf("The following error was encountered when checking for User Home Directory: %w", err)
-	}
-
-	// Use platform-appropriate directory name
-	dirName := "Muninn"
+func (a *App) GetFilePath() string {
+	homeDir, _ := os.UserHomeDir()
+	dirName := ".muninn"
 	if runtime.GOOS == "windows" {
 		dirName = "Muninn"
-	} else {
-		dirName = ".muninn"
 	}
-
-	dirPath := path.Join(homeDir, dirName)
-
-	_, err = os.Stat(dirPath)
-	if errors.Is(err, fs.ErrNotExist) {
-		err = os.Mkdir(dirPath, 0755) // 0755 read, write, execute for owner, read/execute for group/others
-		if err != nil {
-			return fmt.Errorf("failed to create directory %s: %w", dirPath, err)
-		}
-	}
-	return nil
-}
-
-// CreateFile will create a file where the thoughts get appended onto. If no file is presented it will create one with the date as the name.
-func (a *App) CreateFile() (*os.File, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return nil, fmt.Errorf("The following error was encountered when checking for User Home Directory: %w", err)
-	}
-
-	// Use platform-appropriate directory name
-	dirName := "Muninn"
-	if runtime.GOOS == "windows" {
-		dirName = "Muninn"
-	} else {
-		dirName = ".muninn"
-	}
-
-	dirPath := path.Join(homeDir, dirName)
-
-	currentDate := time.Now()
-	currentDateStr := currentDate.Format("2006-01-02")
-
-	filePath := path.Join(dirPath, currentDateStr+".txt")
-	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, fmt.Errorf("error opening file: %w", err)
-	}
-	return file, nil
+	currentDateStr := time.Now().Format("2006-01-02")
+	return path.Join(homeDir, dirName, currentDateStr+".json")
 }
 
 func (a *App) SaveNote(thought Thought) error {
-	file, err := a.CreateFile()
-	if err != nil {
-		return fmt.Errorf("The following error was encountered when creating a file to append thoughts to: %w", err)
+	if err := a.SaveAttachment(&thought); err != nil {
+		return fmt.Errorf("failed to save attachments: %w", err)
 	}
-	defer file.Close()
 
-	// Format the thought with delimiter and timestamp
-	timestampFormatted := thought.Timestamp.Format("15:04:05")
-	noteText := fmt.Sprintf("%s [%s] %s\n", THOUGHT_DELIMITER, timestampFormatted, thought.Text)
+	filePath := a.GetFilePath()
 
-	if _, err := file.WriteString(noteText); err != nil {
-		return fmt.Errorf("error writing thought: %w", err)
+	// ReadFile doesn't error if file doesn't exist, just returns empty
+	var thoughts []Thought
+	if data, err := os.ReadFile(filePath); err == nil && len(data) > 0 {
+		json.Unmarshal(data, &thoughts)
+	}
+
+	thoughts = append(thoughts, thought)
+
+	thoughtsJSON, err := json.MarshalIndent(thoughts, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal thoughts: %w", err)
+	}
+
+	// WriteFile creates the file if it doesn't exist
+	return os.WriteFile(filePath, thoughtsJSON, 0644)
+}
+
+func (a *App) SaveAttachment(thought *Thought) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("failed to get user home directory: %w", err)
+	}
+
+	dirName := ".muninn"
+	if runtime.GOOS == "windows" {
+		dirName = "Muninn"
+	}
+
+	dirPath := filepath.Join(homeDir, dirName, "attachments")
+	currentDateStr := time.Now().Format("2006-01-02")
+	filePath := filepath.Join(dirPath, currentDateStr, thought.ID)
+
+	if err := os.MkdirAll(filePath, 0755); err != nil {
+		return fmt.Errorf("failed to create directory %s: %w", filePath, err)
+	}
+
+	for i, att := range thought.Attachments {
+		if att.FileName == "" {
+			att.FileName = fmt.Sprintf("attachment_%d", i)
+		}
+
+		destPath := filepath.Join(filePath, att.FileName)
+
+		// Save file to disk
+		if len(att.Data) > 0 {
+			if err := os.WriteFile(destPath, att.Data, 0644); err != nil {
+				return fmt.Errorf("failed to save attachment %s: %w", att.FileName, err)
+			}
+		} else if att.FilePath != "" {
+			if err := copyFile(att.FilePath, destPath); err != nil {
+				return fmt.Errorf("failed to copy attachment %s: %w", att.FileName, err)
+			}
+		}
+
+		// Update the attachment with file path and clear binary data
+		thought.Attachments[i].FilePath = filepath.Join("attachments", currentDateStr, thought.ID, att.FileName)
+		thought.Attachments[i].Data = nil // Clear binary data before saving to JSON
 	}
 
 	return nil
+}
+
+// copyFile copies a file from src to dst
+func copyFile(src, dst string) error {
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		return fmt.Errorf("failed to open source file: %w", err)
+	}
+	defer sourceFile.Close()
+
+	destFile, err := os.Create(dst)
+	if err != nil {
+		return fmt.Errorf("failed to create destination file: %w", err)
+	}
+	defer destFile.Close()
+
+	if _, err = io.Copy(destFile, sourceFile); err != nil {
+		return fmt.Errorf("failed to copy file: %w", err)
+	}
+
+	return destFile.Sync()
 }
