@@ -49,6 +49,7 @@ syncs with **Huginn**, the backend server, for processing and retrieval.
 ### Phase 2
 - [x] Clipboard text/image capture
 - [x] Screenshot capture
+- [x] Set up CRON job to send thoughts
 
 ### Phase 3
 - [ ] Sync with Huginn server
