@@ -7,3 +7,5 @@ export function GetFilePath():Promise<string>;
 export function SaveAttachment(arg1:main.Thought):Promise<void>;
 
 export function SaveNote(arg1:main.Thought):Promise<void>;
+
+export function SendFile():Promise<void>;

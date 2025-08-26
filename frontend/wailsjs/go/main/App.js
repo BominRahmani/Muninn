@@ -13,3 +13,7 @@ export function SaveAttachment(arg1) {
 export function SaveNote(arg1) {
   return window['go']['main']['App']['SaveNote'](arg1);
 }
+
+export function SendFile() {
+  return window['go']['main']['App']['SendFile']();
+}
