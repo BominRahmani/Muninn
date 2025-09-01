@@ -6,7 +6,30 @@
     <title>Muninn - Quick Capture</title>
 </head>
 <body>
-    <div class="capture-overlay">
+  <div id="search-overlay" class="overlay hidden">
+    <div class="search-container">
+      <div class="search-header">
+        <div class="search-icon">🔍</div>
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search your thoughts..."
+          autofocus
+        />
+      </div>
+      <div class="search-results-container">
+        <ul id="search-results"></ul>
+      </div>
+      <div class="search-footer">
+        <div class="search-shortcuts">
+          <span class="shortcut">⌘K</span> to search • 
+          <span class="shortcut">⌘C</span> to copy • 
+          <span class="shortcut">Esc</span> to close
+        </div>
+      </div>
+    </div>
+  </div>
+    <div id="capture-overlay" class="capture-overlay">
         <div class="capture-popup" id="capturePopup">
             <div class="drag-hint">Drop files to attach</div>
             <div class="pasted-indicator" id="pastedIndicator">Pasted!</div>

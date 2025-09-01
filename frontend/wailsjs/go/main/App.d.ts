@@ -8,4 +8,6 @@ export function SaveAttachment(arg1:main.Thought):Promise<void>;
 
 export function SaveNote(arg1:main.Thought):Promise<void>;
 
+export function SearchNotes(arg1:string):Promise<Array<main.SearchResult>>;
+
 export function SendFile():Promise<void>;

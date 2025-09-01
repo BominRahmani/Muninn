@@ -14,6 +14,10 @@ export function SaveNote(arg1) {
   return window['go']['main']['App']['SaveNote'](arg1);
 }
 
+export function SearchNotes(arg1) {
+  return window['go']['main']['App']['SearchNotes'](arg1);
+}
+
 export function SendFile() {
   return window['go']['main']['App']['SendFile']();
 }

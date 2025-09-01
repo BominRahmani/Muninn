@@ -20,6 +20,22 @@ export namespace main {
 	        this.data = source["data"];
 	    }
 	}
+	export class SearchResult {
+	    id: string;
+	    content: string;
+	    text: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SearchResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.content = source["content"];
+	        this.text = source["text"];
+	    }
+	}
 	export class Thought {
 	    id: string;
 	    text: string;

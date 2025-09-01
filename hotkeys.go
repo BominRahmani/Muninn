@@ -14,6 +14,7 @@ func (a *App) listenHotkeys() {
 		rt.WindowShow(a.ctx)
 		rt.WindowSetAlwaysOnTop(a.ctx, true)
 		rt.WindowSetAlwaysOnTop(a.ctx, false)
+		rt.EventsEmit(a.ctx, "focusCapture")
 	})
 
 	hook.Register(hook.KeyDown, []string{"esc"}, func(e hook.Event) {
@@ -21,6 +22,13 @@ func (a *App) listenHotkeys() {
 			fmt.Printf("failed to send file: %v\n", err)
 		}
 		rt.WindowHide(a.ctx)
+	})
+
+	hook.Register(hook.KeyDown, []string{"ctrl", "space"}, func(e hook.Event) {
+		rt.WindowShow(a.ctx)
+		rt.WindowSetAlwaysOnTop(a.ctx, true)
+		rt.WindowSetAlwaysOnTop(a.ctx, false)
+		rt.EventsEmit(a.ctx, "focusSearch")
 	})
 
 	s := hook.Start()

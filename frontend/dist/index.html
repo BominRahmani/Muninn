@@ -4,11 +4,34 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Muninn - Quick Capture</title>
-  <script type="module" crossorigin src="/assets/index.e5e943d6.js"></script>
-  <link rel="stylesheet" href="/assets/index.c2e5e2a5.css">
+  <script type="module" crossorigin src="/assets/index.a2ac6dc3.js"></script>
+  <link rel="stylesheet" href="/assets/index.539be221.css">
 </head>
 <body>
-    <div class="capture-overlay">
+  <div id="search-overlay" class="overlay hidden">
+    <div class="search-container">
+      <div class="search-header">
+        <div class="search-icon">🔍</div>
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search your thoughts..."
+          autofocus
+        />
+      </div>
+      <div class="search-results-container">
+        <ul id="search-results"></ul>
+      </div>
+      <div class="search-footer">
+        <div class="search-shortcuts">
+          <span class="shortcut">⌘K</span> to search • 
+          <span class="shortcut">⌘C</span> to copy • 
+          <span class="shortcut">Esc</span> to close
+        </div>
+      </div>
+    </div>
+  </div>
+    <div id="capture-overlay" class="capture-overlay">
         <div class="capture-popup" id="capturePopup">
             <div class="drag-hint">Drop files to attach</div>
             <div class="pasted-indicator" id="pastedIndicator">Pasted!</div>

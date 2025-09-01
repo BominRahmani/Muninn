@@ -53,7 +53,7 @@ syncs with **Huginn**, the backend server, for processing and retrieval.
 
 ### Phase 3
 - [ ] Sync with Huginn server
-- [ ] Lightweight UI to fetch thoughts and fuzzy search on client side
+- [x] Lightweight UI to fetch thoughts and fuzzy search on client side
 
 ---
 
