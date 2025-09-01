@@ -14,6 +14,10 @@
           id="search-input"
           type="text"
           placeholder="Search your thoughts..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
           autofocus
         />
       </div>
@@ -23,8 +27,8 @@
       <div class="search-footer">
         <div class="search-shortcuts">
           <span class="shortcut">⌘K</span> to search • 
-          <span class="shortcut">⌘C</span> to copy • 
-          <span class="shortcut">Esc</span> to close
+          <span class="shortcut">Click</span> to preview • 
+          <span class="shortcut">Backspace</span> to close
         </div>
       </div>
     </div>
@@ -38,6 +42,7 @@
                 class="text-input" 
                 id="textInput"
                 placeholder="What's on your mind?"
+                autocomplete="off"
                 autofocus
             ></textarea>
             
@@ -48,11 +53,36 @@
                     📎 Attach Files
                 </button>
                 <div class="save-shortcuts">
-                    Ctrl+Enter to save • Esc to close
+                    Ctrl+Enter to save • Backspace to close
                 </div>
             </div>
             
             <input type="file" class="hidden-file-input" id="fileInput" multiple accept="*/*">
+        </div>
+    </div>
+    <div id="note-preview-overlay" class="overlay hidden">
+        <div class="note-preview-container">
+            <div class="note-preview-header">
+                <div class="note-preview-title">Note Preview</div>
+                <div class="note-preview-actions">
+                    <button class="note-action-btn" id="editNvimBtn" title="Edit in nvim (Enter)">
+                        📝 Edit
+                    </button>
+                    <button class="note-action-btn" id="copyNoteBtn" title="Copy to clipboard (⌘C)">
+                        📋 Copy
+                    </button>
+                    <button class="note-action-btn" id="closeNoteBtn" title="Close preview (Backspace)">
+                        ✕ Close
+                    </button>
+                </div>
+            </div>
+            <div class="note-preview-content">
+                <div class="note-text" id="notePreviewText"></div>
+                <div class="note-attachments" id="notePreviewAttachments"></div>
+            </div>
+            <div class="note-preview-footer">
+                <div class="note-meta" id="notePreviewMeta"></div>
+            </div>
         </div>
     </div>
 

@@ -4,6 +4,8 @@ import {main} from '../models';
 
 export function GetFilePath():Promise<string>;
 
+export function LaunchNvimWithNote(arg1:string):Promise<void>;
+
 export function SaveAttachment(arg1:main.Thought):Promise<void>;
 
 export function SaveNote(arg1:main.Thought):Promise<void>;

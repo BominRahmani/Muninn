@@ -1,6 +1,6 @@
 import './style.css';
 import './app.css';
-import {SaveNote, SearchNotes} from '../wailsjs/go/main/App';
+import {SaveNote, SearchNotes, LaunchNvimWithNote} from '../wailsjs/go/main/App';
 import {Hide} from '../wailsjs/runtime/runtime';
 
 // Capture functionality
@@ -178,6 +178,7 @@ const overlay = document.getElementById("search-overlay");
 let debounceTimer;
 let selectedIndex = -1;
 let searchResults = [];
+let justShowedPreview = false;
 
 input.addEventListener("input", () => {
   clearTimeout(debounceTimer);
@@ -276,11 +277,7 @@ async function performSearch(query) {
       `;
       li.onclick = () => {
         console.log("Selected note:", note.id);
-        // Copy to clipboard or open detail view
-        navigator.clipboard.writeText(note.text).then(() => {
-          showCopyFeedback();
-        });
-        hideAllOverlays();
+        showNotePreview(note);
       };
       resultsList.appendChild(li);
     });
@@ -339,14 +336,14 @@ function updateSearchFooter(resultCount, query) {
       footer.innerHTML = `
         <span class="results-count">${resultCount} result${resultCount === 1 ? '' : 's'}</span> • 
         <span class="shortcut">⌘K</span> to search • 
-        <span class="shortcut">⌘C</span> to copy • 
-        <span class="shortcut">Esc</span> to close
+        <span class="shortcut">Click</span> to preview • 
+        <span class="shortcut">Backspace</span> to close
       `;
     } else {
       footer.innerHTML = `
         <span class="shortcut">⌘K</span> to search • 
-        <span class="shortcut">⌘C</span> to copy • 
-        <span class="shortcut">Esc</span> to close
+        <span class="shortcut">Click</span> to preview • 
+        <span class="shortcut">Backspace</span> to close
       `;
     }
   }
@@ -367,6 +364,88 @@ function showSearchOverlay() {
 function hideAllOverlays() {
   document.getElementById("capture-overlay").classList.add("hidden");
   document.getElementById("search-overlay").classList.add("hidden");
+  document.getElementById("note-preview-overlay").classList.add("hidden");
+}
+
+function showNotePreview(note) {
+  // Hide search overlay
+  document.getElementById("search-overlay").classList.add("hidden");
+  
+  // Populate note preview content
+  const noteText = document.getElementById("notePreviewText");
+  const noteAttachments = document.getElementById("notePreviewAttachments");
+  const noteMeta = document.getElementById("notePreviewMeta");
+  
+  // Set note text
+  noteText.textContent = note.text || note.content || '';
+  
+  // Set note metadata
+  const timestamp = note.timestamp ? formatTimestamp(note.timestamp) : '';
+  const wordCount = (note.text || note.content || '').split(/\s+/).filter(word => word.length > 0).length;
+  noteMeta.innerHTML = `
+    ${timestamp} • ${wordCount} word${wordCount === 1 ? '' : 's'} • Note ID: ${note.id} • 
+    <span class="shortcut">Enter</span> to edit in nvim • 
+    <span class="shortcut">⌘C</span> to copy • 
+    <span class="shortcut">Backspace</span> to return to search
+  `;
+  
+  // Handle attachments if they exist
+  if (note.attachments && note.attachments.length > 0) {
+    noteAttachments.innerHTML = note.attachments.map(attachment => `
+      <div class="note-attachment-item">
+        <div class="note-attachment-icon">${getFileIcon(attachment.fileType || attachment.type || '')}</div>
+        <div class="note-attachment-name">${attachment.fileName || attachment.name || 'Unknown file'}</div>
+      </div>
+    `).join('');
+  } else {
+    noteAttachments.innerHTML = '';
+  }
+  
+  document.getElementById("note-preview-overlay").classList.remove("hidden");
+  justShowedPreview = true;
+  setTimeout(() => {
+    justShowedPreview = false;
+  }, 100);
+}
+
+function hideNotePreview() {
+  document.getElementById("note-preview-overlay").classList.add("hidden");
+}
+
+function copyNoteToClipboard() {
+  const noteText = document.getElementById("notePreviewText");
+  const textToCopy = noteText.textContent;
+  
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    showCopyFeedback();
+  }).catch(err => {
+    console.error('Failed to copy note:', err);
+  });
+}
+
+async function launchNvimWithCurrentNote() {
+  const noteText = document.getElementById("notePreviewText");
+  const textToCopy = noteText.textContent;
+  
+  try {
+    await LaunchNvimWithNote(textToCopy);
+    console.log('Launched nvim with note content');
+    
+    // Return to search screen after launching nvim
+    hideNotePreview();
+    showSearchOverlay();
+  } catch (err) {
+    console.error('Failed to launch nvim:', err);
+    // Show error feedback to user
+    const feedback = document.createElement('div');
+    feedback.className = 'copy-feedback error';
+    feedback.textContent = 'Failed to launch nvim';
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+      feedback.remove();
+    }, 3000);
+  }
 }
 
 // Listen for Go event to focus search
@@ -381,13 +460,29 @@ window.runtime.EventsOn("focusCapture", () => {
 
 // Global keyboard shortcuts
 document.addEventListener('keydown', (e) => {
-    // Escape key handling
-    if (e.key === 'Escape') {
-        if (!overlay.classList.contains('hidden')) {
+    if (e.key === 'Backspace') {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+            return;
+        }
+        
+        const notePreviewOverlay = document.getElementById('note-preview-overlay');
+        const searchOverlay = document.getElementById('search-overlay');
+        const captureOverlay = document.getElementById('capture-overlay');
+        
+        if (!notePreviewOverlay.classList.contains('hidden')) {
+            e.preventDefault();
+            hideNotePreview();
+            showSearchOverlay(); // Return to search screen when pressing backspace from preview
+        } else if (!searchOverlay.classList.contains('hidden')) {
+            e.preventDefault();
+            hideAllOverlays();
+        } else if (!captureOverlay.classList.contains('hidden')) {
+            e.preventDefault();
             hideAllOverlays();
         } else {
+            e.preventDefault();
             console.log('Closing capture popup...');
-            Hide(); // Hide the window when Escape is pressed
+            Hide(); // Hide the window when Backspace is pressed
         }
     }
     
@@ -402,11 +497,52 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         showSearchOverlay();
     }
+    
+    // Cmd/Ctrl+C to copy note (when in note preview)
+    if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+        const notePreviewOverlay = document.getElementById('note-preview-overlay');
+        if (!notePreviewOverlay.classList.contains('hidden')) {
+            e.preventDefault();
+            copyNoteToClipboard();
+        }
+    }
+    
+    // Enter key to launch nvim (when in note preview)
+    if (e.key === 'Enter') {
+        const notePreviewOverlay = document.getElementById('note-preview-overlay');
+        if (!notePreviewOverlay.classList.contains('hidden') && !justShowedPreview) {
+            e.preventDefault();
+            launchNvimWithCurrentNote();
+        }
+    }
 });
-//
-// Make functions globally available for onclick handlers
+
 window.triggerFileSelect = triggerFileSelect;
 window.removeAttachment = removeAttachment;
+window.showNotePreview = showNotePreview;
+window.hideNotePreview = hideNotePreview;
+window.copyNoteToClipboard = copyNoteToClipboard;
+window.launchNvimWithCurrentNote = launchNvimWithCurrentNote;
 
-// Focus text input on load
+document.addEventListener('DOMContentLoaded', () => {
+    const editNvimBtn = document.getElementById('editNvimBtn');
+    const copyNoteBtn = document.getElementById('copyNoteBtn');
+    const closeNoteBtn = document.getElementById('closeNoteBtn');
+    
+    if (editNvimBtn) {
+        editNvimBtn.addEventListener('click', launchNvimWithCurrentNote);
+    }
+    
+    if (copyNoteBtn) {
+        copyNoteBtn.addEventListener('click', copyNoteToClipboard);
+    }
+    
+    if (closeNoteBtn) {
+        closeNoteBtn.addEventListener('click', () => {
+            hideNotePreview();
+            showSearchOverlay(); // Return to search screen when closing via button
+        });
+    }
+});
+
 setTimeout(() => textInput.focus(), 100);

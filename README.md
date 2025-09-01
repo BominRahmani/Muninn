@@ -55,6 +55,9 @@ syncs with **Huginn**, the backend server, for processing and retrieval.
 - [ ] Sync with Huginn server
 - [x] Lightweight UI to fetch thoughts and fuzzy search on client side
 
+### Things to improve
+- [ ] Retry queue for notes
+- [ ] incremental note sends instead of batch sending EOD
 ---
 
 ## Relationship to Huginn

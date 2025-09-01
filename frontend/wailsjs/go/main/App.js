@@ -6,6 +6,10 @@ export function GetFilePath() {
   return window['go']['main']['App']['GetFilePath']();
 }
 
+export function LaunchNvimWithNote(arg1) {
+  return window['go']['main']['App']['LaunchNvimWithNote'](arg1);
+}
+
 export function SaveAttachment(arg1) {
   return window['go']['main']['App']['SaveAttachment'](arg1);
 }
